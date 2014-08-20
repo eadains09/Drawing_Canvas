@@ -1,0 +1,132 @@
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+
+
+public class CanvasPanel extends JPanel{
+	private JPanel canvas;
+	private ArrayList<Shape> shapes;
+	private String shapeType = "none";
+	private Color color;
+	private boolean firstClick = false;
+	private Shape s, fd;
+
+	CanvasPanel(){
+		this.setPreferredSize(new Dimension(1000, 800));
+		this.setBackground(Color.WHITE);
+		this.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+		this.addMouseListener(new DrawListener());
+		this.addMouseMotionListener(new DrawListener2());
+		
+		shapes = new ArrayList<Shape>();
+		
+	}
+	
+	private class DrawListener implements MouseListener
+	{
+		public void mousePressed(MouseEvent event) {
+			if (shapeType.equals("Circle"))
+			{
+				Shape s = new Circle(event.getPoint(), color);
+				shapes.add(s);
+				repaint();
+			}
+			
+			if (shapeType.equals("Rectangle"))
+			{
+				Shape s = new Rectangle(event.getPoint(), color);
+				shapes.add(s);
+				repaint();
+			}
+			
+			if (shapeType.equals("Polygon"))
+			{
+				if (firstClick==false)
+				{
+					s = new Polygon(event.getPoint(), color);
+					s.setIsComplete(false);
+					shapes.add(s);
+					firstClick=true;
+				}else{
+					s.addPoint(event.getPoint());
+				}
+				
+				if (event.getButton()==MouseEvent.BUTTON3)
+				{
+					s.setIsComplete(true);
+					firstClick=false;
+				}
+
+				repaint();
+			}
+			
+			if (shapeType.equals("FreeDraw"))
+			{
+				fd = new Stroke(event.getPoint(), color);
+				fd.setIsComplete(false);
+				shapes.add(fd);
+				repaint();
+			}
+		}	
+
+		public void mouseClicked(MouseEvent arg0) {}
+		public void mouseEntered(MouseEvent arg0) {}
+		public void mouseExited(MouseEvent arg0) {}
+		public void mouseReleased(MouseEvent arg0) {}
+	}
+	
+	private class DrawListener2 implements MouseMotionListener
+	{
+		public void mouseDragged(MouseEvent event) {
+			if (shapeType.equals("FreeDraw"))
+			{
+				Point point2 = event.getPoint();
+				fd.addPoint(point2);
+				fd.setIsComplete(true);
+				repaint();
+			}
+		}
+		
+		public void mouseMoved(MouseEvent arg0) {}
+	}
+	
+	public void setShapeType(String st)
+	{
+		shapeType = st;
+	}
+	
+	public void setColor(Color c)
+	{
+		color = c;
+	}
+
+	
+	public void paintComponent(Graphics page)
+	{
+		super.paintComponent(page);
+		for (Shape currShape: shapes)
+		{
+			page.setColor(currShape.getColor());
+			currShape.draw(page);
+		}
+	}
+	
+	public JPanel getCanvas()
+	{
+		return canvas;
+	}
+	
+	public void erasePanel()
+	{
+		shapes = new ArrayList<Shape>();
+		repaint();
+	}
+}

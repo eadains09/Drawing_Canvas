@@ -1,0 +1,206 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+
+public class DrawingUI extends JPanel{
+
+	private Font headerFont = new Font(Font.SERIF, Font.BOLD, 30);
+	private Font buttonFont = new Font(Font.SERIF, 20, 20);
+	private Font labelFont = new Font(Font.SERIF, 10, 15);
+
+	private JSlider Red, Blue, Green;
+	private JPanel color;
+	private CanvasPanel canvas;
+	private Color c = new Color(0, 0, 0);
+
+	DrawingUI()
+	{
+		//buttonPanels
+		JPanel topButtonPanel = new JPanel();
+		topButtonPanel.setLayout(new BoxLayout(topButtonPanel, BoxLayout.LINE_AXIS));
+		
+		JButton Circle = new JButton("Circle");
+		Circle.setFont(buttonFont);
+		Circle.addActionListener(new CircleButtonListener());
+		JButton Rectangle = new JButton("Rectangle");
+		Rectangle.setFont(buttonFont);
+		Rectangle.addActionListener(new RectangleButtonListener());
+		JButton Polygon = new JButton("Polygon");
+		Polygon.setFont(buttonFont);
+		Polygon.addActionListener(new PolygonButtonListener());
+		JButton FreeDraw = new  JButton ("FreeDraw");
+		FreeDraw.setFont(buttonFont);
+		FreeDraw.addActionListener(new FreeDrawButtonListener());
+		JButton Erase = new JButton("Erase All");
+		Erase.setFont(buttonFont);
+		Erase.addActionListener(new EraseButtonListener());
+		
+		
+		topButtonPanel.add(Circle);
+		topButtonPanel.add(Rectangle);
+		topButtonPanel.add(Polygon);
+		topButtonPanel.add(FreeDraw);
+		topButtonPanel.add(Erase);
+		
+		JPanel bottomButtonPanel = new JPanel();
+		bottomButtonPanel.setLayout(new BoxLayout(bottomButtonPanel, BoxLayout.LINE_AXIS));
+		
+		color = new JPanel();
+		color.setPreferredSize(new Dimension(50, 25));
+		color.setMaximumSize(new Dimension(80, 50));
+		color.setBackground(Color.BLACK);
+		
+		
+		JPanel sliders = new JPanel();
+		sliders.setLayout(new BoxLayout (sliders, BoxLayout.PAGE_AXIS));
+		Dimension sliderMaxDimension = new Dimension(250, 50);
+		Dimension sliderPrefDimension = new Dimension(150, 20);
+		
+		Red = new JSlider(0, 255);
+		Red.setPreferredSize(sliderPrefDimension);
+		Red.setMaximumSize(sliderMaxDimension);
+		Red.setValue(0);
+		Red.addChangeListener(new SliderListener());
+		Blue = new JSlider(0, 255);
+		Blue.setPreferredSize(sliderPrefDimension);
+		Blue.setMaximumSize(sliderMaxDimension);
+		Blue.setValue(0);
+		Blue.addChangeListener(new SliderListener());
+		Green = new JSlider(0, 255);
+		Green.setPreferredSize(sliderPrefDimension);
+		Green.setMaximumSize(sliderMaxDimension);
+		Green.setValue(0);
+		Green.addChangeListener(new SliderListener());
+		
+		sliders.add(Red);
+		sliders.add(Blue);
+		sliders.add(Green);
+		
+		JPanel sliderLabels = new JPanel();
+		sliderLabels.setLayout(new BoxLayout(sliderLabels, BoxLayout.PAGE_AXIS));
+		
+		JLabel redLabel = new JLabel("Red");
+		redLabel.setFont(labelFont);
+		JLabel blueLabel = new JLabel("Blue");
+		blueLabel.setFont(labelFont);
+		JLabel greenLabel = new JLabel("Green");
+		greenLabel.setFont(labelFont);
+		
+		sliderLabels.add(redLabel);
+		sliderLabels.add(blueLabel);
+		sliderLabels.add(greenLabel);
+		
+		
+		JButton Open = new JButton("Open");
+		Open.setFont(buttonFont);
+		Open.addActionListener(new OpenButtonListener());
+		JButton Save = new JButton("Save");
+		Save.setFont(buttonFont);
+		Save.addActionListener(new SaveButtonListener());
+		
+		
+		bottomButtonPanel.add(color);
+		bottomButtonPanel.add(sliders);
+		bottomButtonPanel.add(sliderLabels);
+		bottomButtonPanel.add(Open);
+		bottomButtonPanel.add(Save);
+		
+		
+		JPanel buttonPanels = new JPanel();
+		buttonPanels.setLayout(new BoxLayout(buttonPanels, BoxLayout.PAGE_AXIS));
+		
+		buttonPanels.add(topButtonPanel);
+		buttonPanels.add(bottomButtonPanel);
+		
+		canvas = new CanvasPanel();
+		canvas.setColor(c);
+		
+		//outer panel
+		JPanel outer = new JPanel();
+		outer.setLayout(new BorderLayout());
+		outer.add(buttonPanels, BorderLayout.NORTH);
+		outer.add(canvas, BorderLayout.CENTER);
+		
+		add(outer);
+		
+	}
+	
+	
+	private class CircleButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent arg0){
+			canvas.setShapeType("Circle");
+			}	
+	}
+	
+	class RectangleButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent arg0){
+			canvas.setShapeType("Rectangle");
+		}
+	}
+	
+	class PolygonButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent arg0){
+			canvas.setShapeType("Polygon");
+		}
+	}
+	
+	private class FreeDrawButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent arg0){
+			canvas.setShapeType("FreeDraw");
+		}
+	}
+	
+	private class SliderListener implements ChangeListener
+	{
+		public void stateChanged(ChangeEvent arg0) {
+			c = new Color(Red.getValue(), Green.getValue(), Blue.getValue());
+			color.setBackground(c);
+			color.revalidate();
+			canvas.setColor(c);
+		}
+	}
+	
+	private class EraseButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e) {
+			canvas.erasePanel();
+		}
+	}
+	
+	private class OpenButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e) {
+			canvas.loadShapes();
+		}	
+	}
+	
+	private class SaveButtonListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e) {
+			canvas.saveShapes();
+		}
+	}
+}

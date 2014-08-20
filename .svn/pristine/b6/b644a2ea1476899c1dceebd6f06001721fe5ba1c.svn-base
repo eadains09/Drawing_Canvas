@@ -1,0 +1,53 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.util.ArrayList;
+
+
+public class Polygon extends Shape {
+
+	private ArrayList<Point> points;
+	private boolean isComplete;
+	
+	Polygon(Point p, Color c)
+	{
+		super(p, c);
+		points = new ArrayList<Point>();
+		points.add(p);
+	}
+	
+	public void addPoint(Point p)
+	{
+		points.add(p);
+	}
+	
+	public void setIsComplete(boolean b)
+	{
+		isComplete = b;
+	}
+	
+	public ArrayList<Point> returnPoints()
+	{
+		return points;
+	}
+	
+	public void draw(Graphics page)
+	{
+		int[] xPoints = new int[points.size()];
+		int[] yPoints = new int[points.size()];
+		
+		for (int i=0; i<points.size(); i++)
+		{
+			xPoints[i] = points.get(i).x;
+			yPoints[i] = points.get(i).y;
+		}
+		
+		if (isComplete==true)
+		{
+			page.fillPolygon(xPoints, yPoints, xPoints.length);
+		}else
+		{
+			page.drawPolyline(xPoints, yPoints, xPoints.length);
+		}
+	}
+}

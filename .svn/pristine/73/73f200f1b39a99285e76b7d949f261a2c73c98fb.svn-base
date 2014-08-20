@@ -1,0 +1,32 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+
+
+public class Rectangle extends Shape {
+	
+	private final int height=30, width=30;
+
+	Rectangle(Point p, Color c)
+	{
+		super(p, c);
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+	
+	public void addPoint(Point e){}
+	public void setIsComplete(boolean b){}
+	
+	public void draw(Graphics page)
+	{
+		page.fillRect(getPoint().x, getPoint().y, width, height);
+	}
+	
+	
+}
